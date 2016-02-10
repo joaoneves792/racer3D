@@ -108,6 +108,9 @@ class shader(_object):
 
     def getShader(self):
         return _ms3d.shader_getShader(self)
+
+    def use(self):
+        return _ms3d.shader_use(self)
 shader_swigregister = _ms3d.shader_swigregister
 shader_swigregister(shader)
 
@@ -118,8 +121,8 @@ class ms3d(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, ms3d, name)
     __repr__ = _swig_repr
 
-    def __init__(self, filename, overrideAmbient=False, overrideSpecular=False, overrideDiffuse=False, overrideEmissive=False):
-        this = _ms3d.new_ms3d(filename, overrideAmbient, overrideSpecular, overrideDiffuse, overrideEmissive)
+    def __init__(self, *args):
+        this = _ms3d.new_ms3d(*args)
         try:
             self.this.append(this)
         except Exception:
@@ -133,6 +136,12 @@ class ms3d(_object):
     def drawGL3(self):
         return _ms3d.ms3d_drawGL3(self)
 
+    def createRectangle(self, width, height, texture):
+        return _ms3d.ms3d_createRectangle(self, width, height, texture)
+
+    def changeRectangleTexture(self, texture):
+        return _ms3d.ms3d_changeRectangleTexture(self, texture)
+
     def prepare(self, shader):
         return _ms3d.ms3d_prepare(self, shader)
 
@@ -141,8 +150,21 @@ class ms3d(_object):
 
     def changeTexture(self, groupName, textureFile):
         return _ms3d.ms3d_changeTexture(self, groupName, textureFile)
+
+    def changeMaterialEmissive(self, name, red, green, blue):
+        return _ms3d.ms3d_changeMaterialEmissive(self, name, red, green, blue)
+
+    def changeMaterialTransparency(self, name, alpha):
+        return _ms3d.ms3d_changeMaterialTransparency(self, name, alpha)
+    __swig_getmethods__["initGlew"] = lambda x: _ms3d.ms3d_initGlew
+    if _newclass:
+        initGlew = staticmethod(_ms3d.ms3d_initGlew)
 ms3d_swigregister = _ms3d.ms3d_swigregister
 ms3d_swigregister(ms3d)
+
+def ms3d_initGlew():
+    return _ms3d.ms3d_initGlew()
+ms3d_initGlew = _ms3d.ms3d_initGlew
 
 class Tex(_object):
     __swig_setmethods__ = {}
@@ -160,11 +182,23 @@ class Tex(_object):
 
     def getTexture(self):
         return _ms3d.Tex_getTexture(self)
+
+    def genTexture(self, data, width, height):
+        return _ms3d.Tex_genTexture(self, data, width, height)
     __swig_destroy__ = _ms3d.delete_Tex
     __del__ = lambda self: None
 Tex_swigregister = _ms3d.Tex_swigregister
 Tex_swigregister(Tex)
 
+
+_ms3d.MODEL_swigconstant(_ms3d)
+MODEL = _ms3d.MODEL
+
+_ms3d.VIEW_swigconstant(_ms3d)
+VIEW = _ms3d.VIEW
+
+_ms3d.PROJECTION_swigconstant(_ms3d)
+PROJECTION = _ms3d.PROJECTION
 class GLM(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, GLM, name, value)
@@ -187,6 +221,12 @@ class GLM(_object):
     def perspective(self, fov_degrees, aspect_ratio, near, far):
         return _ms3d.GLM_perspective(self, fov_degrees, aspect_ratio, near, far)
 
+    def otho(self, left, right, bottom, top, near, far):
+        return _ms3d.GLM_otho(self, left, right, bottom, top, near, far)
+
+    def lookAt(self, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ):
+        return _ms3d.GLM_lookAt(self, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
+
     def loadIdentity(self):
         return _ms3d.GLM_loadIdentity(self)
 
@@ -196,11 +236,23 @@ class GLM(_object):
     def rotate(self, angle, x, y, z):
         return _ms3d.GLM_rotate(self, angle, x, y, z)
 
+    def scale(self, x, y, z):
+        return _ms3d.GLM_scale(self, x, y, z)
+
+    def billboard(self, x, y, z):
+        return _ms3d.GLM_billboard(self, x, y, z)
+
     def pushMatrix(self):
         return _ms3d.GLM_pushMatrix(self)
 
     def popMatrix(self):
         return _ms3d.GLM_popMatrix(self)
+
+    def changeShader(self, newShader):
+        return _ms3d.GLM_changeShader(self, newShader)
+
+    def getMVP(self):
+        return _ms3d.GLM_getMVP(self)
 GLM_swigregister = _ms3d.GLM_swigregister
 GLM_swigregister(GLM)
 
@@ -223,6 +275,12 @@ class Lights(_object):
     __swig_destroy__ = _ms3d.delete_Lights
     __del__ = lambda self: None
 
+    def enableLighting(self):
+        return _ms3d.Lights_enableLighting(self)
+
+    def disableLighting(self):
+        return _ms3d.Lights_disableLighting(self)
+
     def enable(self, light):
         return _ms3d.Lights_enable(self, light)
 
@@ -239,6 +297,60 @@ class Lights(_object):
         return _ms3d.Lights_setCone(self, light, direction_x, direction_y, direction_z, angle)
 Lights_swigregister = _ms3d.Lights_swigregister
 Lights_swigregister(Lights)
+
+class Shadows(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Shadows, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Shadows, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, glm, normalShader, shadowMapShader, window_width, window_height, shadow_map_width, shadow_map_height):
+        this = _ms3d.new_Shadows(glm, normalShader, shadowMapShader, window_width, window_height, shadow_map_width, shadow_map_height)
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _ms3d.delete_Shadows
+    __del__ = lambda self: None
+
+    def prepareToMapDepth(self, lightPosX, lightPosY, lightPosZ):
+        return _ms3d.Shadows_prepareToMapDepth(self, lightPosX, lightPosY, lightPosZ)
+
+    def changeOrthoBox(self, left, right, bottom, top, near, far):
+        return _ms3d.Shadows_changeOrthoBox(self, left, right, bottom, top, near, far)
+
+    def returnToNormalDrawing(self):
+        return _ms3d.Shadows_returnToNormalDrawing(self)
+
+    def getShadowTexture(self):
+        return _ms3d.Shadows_getShadowTexture(self)
+
+    def setShadowType(self, type):
+        return _ms3d.Shadows_setShadowType(self, type)
+Shadows_swigregister = _ms3d.Shadows_swigregister
+Shadows_swigregister(Shadows)
+
+class Text(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Text, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Text, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, bitmapFont, width, height, rows, columns, fontSize, vertSpacing, horizSpacing):
+        this = _ms3d.new_Text(bitmapFont, width, height, rows, columns, fontSize, vertSpacing, horizSpacing)
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _ms3d.delete_Text
+    __del__ = lambda self: None
+
+    def drawTextLine(self, text, size):
+        return _ms3d.Text_drawTextLine(self, text, size)
+Text_swigregister = _ms3d.Text_swigregister
+Text_swigregister(Text)
 
 # This file is compatible with both classic and new-style classes.
 
